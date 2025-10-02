@@ -76,7 +76,7 @@ Examples:
 (defmethod tool-system/format-results ::clojure-eval [_ {:keys [outputs error repaired] :as eval-result}]
   ;; The core implementation now returns a map with :outputs (raw outputs), :error (boolean), and :repaired (boolean)
   ;; We need to format the outputs and return a map with :result, :error, and :repaired
-  {:result (if error (last (core/partition-and-format-outputs outputs)) (core/partition-and-format-outputs outputs))
+  {:result (if error (vector    (last (core/partition-and-format-outputs outputs))) (core/partition-and-format-outputs outputs))
    :error error
    :repaired repaired})
 
@@ -100,7 +100,7 @@ Examples:
   (def eval-tool (create-eval-tool client-atom))
 
   ;; Test the individual multimethod steps with options map
-  (def inputs {:code "(+ 1 2)" :timeout_ms 5000})
+  (def inputs {:code "(+ 1 2) (/ 2 0)" :timeout_ms 5000})
   (def validated (tool-system/validate-inputs eval-tool inputs))
   (def result (tool-system/execute-tool eval-tool validated))
   (def formatted (tool-system/format-results eval-tool result))
