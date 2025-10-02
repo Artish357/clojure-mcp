@@ -76,7 +76,7 @@ Examples:
 (defmethod tool-system/format-results ::clojure-eval [_ {:keys [outputs error repaired] :as eval-result}]
   ;; The core implementation now returns a map with :outputs (raw outputs), :error (boolean), and :repaired (boolean)
   ;; We need to format the outputs and return a map with :result, :error, and :repaired
-  {:result (core/partition-and-format-outputs outputs)
+  {:result (if error (last (core/partition-and-format-outputs outputs)) (core/partition-and-format-outputs outputs))
    :error error
    :repaired repaired})
 
@@ -116,7 +116,7 @@ Examples:
 
   ;; Test running the tool-fn directly
   (def tool-fn (:tool-fn reg-map))
-  (tool-fn nil {"code" "(+ 1 2)"} (fn [result error] (println "Result:" result "Error:" error)))
+  (tool-fn nil {"code" "(+ 1 2) (/ 2 0)"} (fn [result error] (println "Result:" result "Error:" error)))
   (tool-fn nil {"code" "(+ 1 2", "ns" "clojure.string"}
            (fn [result error] (println "Result:" result "Error:" error)))
 
